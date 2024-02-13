@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
   getDownloadURL,
   getStorage,
@@ -9,7 +9,7 @@ import { app } from '../firebase';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-export default function CreateListing() {
+export default function CreateHouse() {
   const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const [files, setFiles] = useState([]);
@@ -18,13 +18,14 @@ export default function CreateListing() {
     name: '',
     description: '',
     address: '',
-    type: 'rent',
+    price: 50,
+    location: '',
+    type: 'join',
     bedrooms: 1,
     bathrooms: 1,
-    regularPrice: 50,
-    discountPrice: 0,
     offer: false,
     parking: false,
+    discountPrice: 0, // Added discountPrice to initial state
   });
   const [imageUploadError, setImageUploadError] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -92,33 +93,25 @@ export default function CreateListing() {
   };
 
   const handleChange = (e) => {
-    if (e.target.id === 'sale' || e.target.id === 'rent') {
-      setFormData({
-        ...formData,
-        type: e.target.id,
-      });
-    }
-
-    if (
-      e.target.id === 'parking' ||
-      e.target.id === 'furnished' ||
-      e.target.id === 'offer'
-    ) {
-      setFormData({
-        ...formData,
-        [e.target.id]: e.target.checked,
-      });
-    }
-
-    if (
-      e.target.type === 'number' ||
-      e.target.type === 'text' ||
-      e.target.type === 'textarea'
-    ) {
-      setFormData({
-        ...formData,
-        [e.target.id]: e.target.value,
-      });
+    const { id, type, checked, value } = e.target;
+  
+    switch (type) {
+      case 'checkbox':
+        setFormData({
+          ...formData,
+          [id]: checked,
+        });
+        break;
+      case 'number':
+      case 'text':
+      case 'textarea':
+        setFormData({
+          ...formData,
+          [id]: value,
+        });
+        break;
+      default:
+        break;
     }
   };
 
@@ -127,11 +120,11 @@ export default function CreateListing() {
     try {
       if (formData.imageUrls.length < 1)
         return setError('You must upload at least one image');
-      if (+formData.regularPrice < +formData.discountPrice)
+      if (+formData.price < +formData.discountPrice)
         return setError('Discount price must be lower than regular price');
       setLoading(true);
       setError(false);
-      const res = await fetch('/api/listing/create', {
+      const res = await fetch('/api/house/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -146,7 +139,7 @@ export default function CreateListing() {
       if (data.success === false) {
         setError(data.message);
       }
-      navigate(`/listing/${data._id}`);
+      navigate(`/house/${data._id}`);
     } catch (error) {
       setError(error.message);
       setLoading(false);
@@ -171,7 +164,6 @@ export default function CreateListing() {
             value={formData.name}
           />
           <textarea
-            type='text'
             placeholder='Description'
             className='border p-3 rounded-lg'
             id='description'
@@ -188,14 +180,23 @@ export default function CreateListing() {
             onChange={handleChange}
             value={formData.address}
           />
+          <input
+            type='text'
+            placeholder='Location'
+            className='border p-3 rounded-lg'
+            id='location'
+            required
+            onChange={handleChange}
+            value={formData.location}
+          />
           <div className='flex gap-6 flex-wrap'>
             <div className='flex gap-2'>
               <input
                 type='checkbox'
-                id='rent'
+                id='join'
                 className='w-5'
                 onChange={handleChange}
-                checked={formData.type === 'rent'}
+                checked={formData.type === 'join'}
               />
               <span>Peer to Join</span>
             </div>
@@ -260,18 +261,18 @@ export default function CreateListing() {
             <div className='flex items-center gap-2'>
               <input
                 type='number'
-                id='regularPrice'
+                id='price'
                 min='50'
                 max='10000000'
                 required
                 className='p-3 border border-gray-300 rounded-lg'
                 onChange={handleChange}
-                value={formData.regularPrice}
+                value={formData.price}
               />
               <div className='flex flex-col items-center'>
-                <p>Regular price</p>
-                {formData.type === 'rent' && (
-                  <span className='text-xs'>($ / month)</span>
+                <p>Price</p>
+                {formData.type === 'join' && (
+                  <span className='text-xs'>(Rwf / month)</span>
                 )}
               </div>
             </div>
@@ -290,7 +291,7 @@ export default function CreateListing() {
                 <div className='flex flex-col items-center'>
                   <p>Discounted price</p>
 
-                  {formData.type === 'rent' && (
+                  {formData.type === 'join' && (
                     <span className='text-xs'>($ / month)</span>
                   )}
                 </div>
@@ -318,7 +319,7 @@ export default function CreateListing() {
               type='button'
               disabled={uploading}
               onClick={handleImageSubmit}
-              className='p-3 text-green-700 border border-green-700 rounded uppercase hover:shadow-lg disabled:opacity-80'
+              className='p-3 text-purple-700 border border-purple-700 rounded uppercase hover:shadow-lg disabled:opacity-80'
             >
               {uploading ? 'Uploading...' : 'Upload'}
             </button>
@@ -350,7 +351,7 @@ export default function CreateListing() {
             disabled={loading || uploading}
             className='p-3 bg-purple-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80'
           >
-            {loading ? 'Creating...' : 'Create listing'}
+            {loading ? 'Creating...' : 'Add A house'}
           </button>
           {error && <p className='text-red-700 text-sm'>{error}</p>}
         </div>

@@ -4,7 +4,7 @@ import { errorHandler } from '../utils/error.js';
 export const createHouse = async (req, res, next) => {
   try {
     const house = await House.create(req.body);
-    return res.status(201).json(listing);
+    return res.status(201).json(house);
   } catch (error) {
     next(error);
   }
@@ -96,7 +96,7 @@ export const getHouses = async (req, res, next) => {
 
     const order = req.query.order || 'desc';
 
-    const listings = await Listing.find({
+    const houses = await House.find({
       name: { $regex: searchTerm, $options: 'i' },
       offer,
       furnished,
@@ -107,7 +107,7 @@ export const getHouses = async (req, res, next) => {
       .limit(limit)
       .skip(startIndex);
 
-    return res.status(200).json(listings);
+    return res.status(200).json(houses);
   } catch (error) {
     next(error);
   }
