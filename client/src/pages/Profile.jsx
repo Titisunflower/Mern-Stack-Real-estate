@@ -28,7 +28,7 @@ export default function Profile() {
   const [formData, setFormData] = useState({});
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [showListingsError, setShowListingsError] = useState(false);
-  const [userHouses, setUserHouses] = useState([]); // Corrected variable name
+  const [userHouses, setUserHouses] = useState([]);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -105,41 +105,41 @@ export default function Profile() {
       dispatch(deleteUserFailure(error.message));
     }
   };
-
   const handleSignOut = async () => {
     try {
       dispatch(signOutUserStart());
       const res = await fetch('/api/auth/signout');
       const data = await res.json();
       if (data.success === false) {
-        dispatch(signOutUserFailure(data.message)); // Corrected action
+        dispatch(deleteUserFailure(data.message));
         return;
       }
-      dispatch(signOutUserSuccess(data)); // Corrected action
+      dispatch(deleteUserSuccess(data));
     } catch (error) {
-      dispatch(signOutUserFailure(error.message)); // Corrected action
+      dispatch(deleteUserFailure(data.message));
     }
   };
+
 
   const handleShowHouses = async () => {
     try {
-      setShowListingsError(false); // Corrected variable name
-      const res = await fetch(`/api/user/houses/${currentUser._id}`); // Corrected endpoint
+      setShowHousesError(false);
+      const res = await fetch(`/api/user/houses/${currentUser._id}`);
       const data = await res.json();
       if (data.success === false) {
-        setShowListingsError(true); // Corrected variable name
+        setShowHousesError(true); 
         return;
       }
 
-      setUserHouses(data); // Corrected variable name
+      setUserHouses(data);
     } catch (error) {
-      setShowListingsError(true); // Corrected variable name
+      setShowHousesError(true); 
     }
   };
 
-  const handleHouseDelete = async (houseId) => { // Corrected parameter name
+  const handleHouseDelete = async (houseId) => { 
     try {
-      const res = await fetch(`/api/house/delete/${houseId}`, { // Corrected endpoint and parameter
+      const res = await fetch(`/api/house/delete/${houseId}`, { 
         method: 'DELETE',
       });
       const data = await res.json();
@@ -149,7 +149,7 @@ export default function Profile() {
       }
 
       setUserHouses((prev) =>
-        prev.filter((house) => house._id !== houseId) // Corrected variable name
+        prev.filter((house) => house._id !== houseId)
       );
     } catch (error) {
       console.log(error.message);
@@ -181,7 +181,7 @@ export default function Profile() {
           ) : filePerc > 0 && filePerc < 100 ? (
             <span className='text-slate-700'>{`Uploading ${filePerc}%`}</span>
           ) : filePerc === 100 ? (
-            <span className='text-green-700'>Image successfully uploaded!</span>
+            <span className='text-purple-700'>Image successfully uploaded!</span>
           ) : (
             ''
           )}
@@ -189,7 +189,7 @@ export default function Profile() {
         <input
           type='text'
           placeholder='username'
-          value={formData.username || currentUser.username} // Changed defaultValue to value
+          value={formData.username || currentUser.username}
           id='username'
           className='border p-3 rounded-lg'
           onChange={handleChange}
@@ -198,7 +198,7 @@ export default function Profile() {
           type='email'
           placeholder='email'
           id='email'
-          value={formData.email || currentUser.email} // Changed defaultValue to value
+          value={formData.email || currentUser.email}
           className='border p-3 rounded-lg'
           onChange={handleChange}
         />
