@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   getDownloadURL,
   getStorage,
@@ -7,11 +7,12 @@ import {
 } from 'firebase/storage';
 import { app } from '../firebase';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
-export default function CreateHouse() {
+export default function CreateListing() {
   const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const params = useParams();
   const [files, setFiles] = useState([]);
   const [formData, setFormData] = useState({
     imageUrls: [],
@@ -31,7 +32,22 @@ export default function CreateHouse() {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
-  console.log(formData);
+
+  useEffect(() => {
+    const fetchHouse = async () => {
+      const houseId = params.listingId;
+      const res = await fetch(`/api/house/get/${houseId}`);
+      const data = await res.json();
+      if (data.success === false) {
+        console.log(data.message);
+        return;
+      }
+      setFormData(data);
+    };
+
+    fetchHouse();
+  }, []);
+
   const handleImageSubmit = (e) => {
     if (files.length > 0 && files.length + formData.imageUrls.length < 7) {
       setUploading(true);
@@ -124,7 +140,7 @@ export default function CreateHouse() {
         return setError('Discount price must be lower than regular price');
       setLoading(true);
       setError(false);
-      const res = await fetch('/api/house/create', {
+      const res = await fetch('/api/house/update${params.houseId}', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -148,7 +164,7 @@ export default function CreateHouse() {
   return (
     <main className='p-3 max-w-4xl mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>
-        Add A House
+        Update a Listing
       </h1>
       <form onSubmit={handleSubmit} className='flex flex-col sm:flex-row gap-4'>
         <div className='flex flex-col gap-4 flex-1'>
@@ -157,11 +173,14 @@ export default function CreateHouse() {
             placeholder='Name'
             className='border p-3 rounded-lg'
             id='name'
+            maxLength='62'
+            minLength='10'
             required
             onChange={handleChange}
             value={formData.name}
           />
           <textarea
+            type='text'
             placeholder='Description'
             className='border p-3 rounded-lg'
             id='description'
@@ -259,17 +278,17 @@ export default function CreateHouse() {
             <div className='flex items-center gap-2'>
               <input
                 type='number'
-                id='price'
+                id='regularPrice'
                 min='50'
                 max='10000000'
                 required
                 className='p-3 border border-gray-300 rounded-lg'
                 onChange={handleChange}
-                value={formData.price}
+                value={formData.regularPrice}
               />
               <div className='flex flex-col items-center'>
                 <p>Price</p>
-                {formData.type === 'join' && (
+                {formData.type === 'rent' && (
                   <span className='text-xs'>(Rwf / month)</span>
                 )}
               </div>
@@ -288,8 +307,7 @@ export default function CreateHouse() {
                 />
                 <div className='flex flex-col items-center'>
                   <p>Discounted price</p>
-
-                  {formData.type === 'join' && (
+                  {formData.type === 'rent' && (
                     <span className='text-xs'>(Rwf / month)</span>
                   )}
                 </div>
@@ -349,7 +367,7 @@ export default function CreateHouse() {
             disabled={loading || uploading}
             className='p-3 bg-purple-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80'
           >
-            {loading ? 'Creating...' : 'Add A house'}
+            {loading ? 'Updating...' : 'Update house  '}
           </button>
           {error && <p className='text-red-700 text-sm'>{error}</p>}
         </div>

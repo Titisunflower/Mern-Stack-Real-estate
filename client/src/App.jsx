@@ -8,6 +8,7 @@ import AddHouse from './pages/AddHouse';
 import MainUserPage from './pages/public_pages/MainUserPage';
 import MainAdminPage from './pages/private_pages/MainAdminPages';
 import PrivateRoute from './components/PrivateRoute';
+import UpdateHouse from './pages/UpdateHouse';
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
           <Route path='/sign-in' element={<SignIn />} />
           <Route path='/sign-up' element={<SignUp />} />
           <Route path='/add-house' element={<AddHouse />} />
+          <Route path='/update-house/:houseId' element={<UpdateHouse />} />
           <Route element={<PrivateRoute />}>
           <Route path='/profile' element={<Profile />} />
         </Route>

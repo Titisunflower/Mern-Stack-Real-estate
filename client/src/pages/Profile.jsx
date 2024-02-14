@@ -97,7 +97,7 @@ export default function Profile() {
       });
       const data = await res.json();
       if (data.success === false) {
-        dispatch(deleteUserFailure(data.message));
+        dispatch(deleteUserFailure(error.message));
         return;
       }
       dispatch(deleteUserSuccess(data));
@@ -123,7 +123,7 @@ export default function Profile() {
 
   const handleShowHouses = async () => {
     try {
-      setShowHousesError(false);
+      setShowListingsError(false);
       const res = await fetch(`/api/user/houses/${currentUser._id}`);
       const data = await res.json();
       if (data.success === false) {
