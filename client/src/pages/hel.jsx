@@ -7,7 +7,6 @@ import 'swiper/css/bundle';
 import HouseItem from '../components/HouseItem';
 import Banner from '../components/Banner'
 import Footer from '../components/Footer'
-import axios from 'axios';
 
 export default function Home() {
   const [offerHouses, setOfferHouses] = useState([]);
@@ -17,13 +16,12 @@ export default function Home() {
   useEffect(() => {
     const fetchOfferHouses = async () => {
       try {
-        const res = await fetch('/api/house/get?offer=true&lim');
+        const res = await fetch('/api/house/get?offer=true&limit=4');
         if (!res.ok) {
           throw new Error('Failed to fetch offer houses');
         }
         const data = await res.json();
         setOfferHouses(data);
-        
         fetchJoinHouses();
       } catch (error) {
         console.log(error);
@@ -31,13 +29,12 @@ export default function Home() {
     };
     const fetchJoinHouses = async () => {
       try {
-        const res = await fetch('api/house/housesall');
+        const res = await fetch('/api/house/get?type=join&limit=4');
         if (!res.ok) {
           throw new Error('Failed to fetch join houses');
         }
         const data = await res.json();
-       setJoinHouses(data)
-        console.log(data)
+        setJoinHouses(data);
       } catch (error) {
         console.log(error);
       }
@@ -63,12 +60,25 @@ export default function Home() {
             </SwiperSlide>
           ))}
       </Swiper>
-      <div className='max-w-6xl mx-auto p-3 flex flex-col gap-8 my-10 items-center'>
-      {joinHouses && joinHouses.length > 0 && (
+      <div className='max-w-6xl mx-auto p-3 flex flex-col gap-8 my-10'>
+        {offerHouses.length > 0 && (
+          <div className=''>
+            <div className='my-3'>
+              <h2 className='text-2xl font-semibold text-slate-600'>Recent offers</h2>
+              <Link className='text-sm text-blue-800 hover:underline' to={'/search?offer=true'}>Show more offers</Link>
+            </div>
+            <div className='flex flex-wrap gap-4'>
+              {offerHouses.map((house) => (
+                <HouseItem house={house} key={house._id} />
+              ))}
+            </div>
+          </div>
+        )}
+        {joinHouses && joinHouses.length > 0 && (
           <div className=''>
             <div className='my-3'>
               <h2 className='text-2xl font-semibold text-purple-600'>Recent places for Join</h2>
-              <Link className='text-sm text-slate-800 hover:underline' to={'/search?type=join'}>Show more places for Join</Link>
+              <Link className='text-sm text-slate-800 hover:underline' to={'/search?type=join'}>Show more places for Join</Link> {/* Consistent route */}
             </div>
             <div className='flex flex-wrap gap-4'>
               {joinHouses.map((house) => (

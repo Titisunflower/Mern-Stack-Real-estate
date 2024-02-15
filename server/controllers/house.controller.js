@@ -74,7 +74,7 @@ export const getHouses = async (req, res, next) => {
 
     let furnished = req.query.furnished;
 
-    if (furnished === undefined || furnished === 'false') {
+    if (furnished === undefined ||  furnished === 'false') {
       furnished = { $in: [false, true] };
     }
 
@@ -112,3 +112,14 @@ export const getHouses = async (req, res, next) => {
     next(error);
   }
 };
+
+
+export const getAllHouse = async(req,res)=>{
+  const  record = await House.find()
+  if(record){
+    res.status(200).json(record)
+  }else{
+    res.status(404).json({message:"No record found"})
+  }
+
+}
