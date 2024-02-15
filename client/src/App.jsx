@@ -9,6 +9,8 @@ import MainUserPage from './pages/public_pages/MainUserPage';
 import MainAdminPage from './pages/private_pages/MainAdminPages';
 import PrivateRoute from './components/PrivateRoute';
 import UpdateHouse from './pages/UpdateHouse';
+import House from './pages/House';
+import Search from './pages/Search';
 
 export default function App() {
   return (
@@ -18,12 +20,14 @@ export default function App() {
         {/* public pages  */}
           <Route path='/' element={<Home />} />
           <Route path='/about' element={<About />} />
+          <Route path='/search' element={<Search />} />
         </Route>
         <Route path='/' element={<MainAdminPage />} >
         {/* Authentication Pages */}
           <Route path='/sign-in' element={<SignIn />} />
           <Route path='/sign-up' element={<SignUp />} />
           <Route path='/add-house' element={<AddHouse />} />
+          <Route path='/house/:houseId' element={<House />} />
           <Route path='/update-house/:houseId' element={<UpdateHouse />} />
           <Route element={<PrivateRoute />}>
           <Route path='/profile' element={<Profile />} />
