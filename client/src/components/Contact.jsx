@@ -1,67 +1,52 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MdLocationOn } from 'react-icons/md';
-import Contact from './Contact'; // Import the Contact component
 
-export default function HouseItem({ house }) {
-  const [showContact, setShowContact] = useState(false);
-
-  const toggleContact = () => {
-    setShowContact(!showContact);
+export default function Contact({ house }) {
+  const [landlord, setLandlord] = useState(null);
+  const [message, setMessage] = useState('');
+  const onChange = (e) => {
+    setMessage(e.target.value);
   };
 
+  useEffect(() => {
+    const fetchLandlord = async () => {
+      try {
+        const res = await fetch(`/api/user/${house.userRef}`);
+        const data = await res.json();
+        setLandlord(data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchLandlord();
+  }, [house.userRef]);
   return (
-    <div className='bg-white shadow-md hover:shadow-lg transition-shadow overflow-hidden rounded-lg w-full sm:w-[330px]'>
-      <Link to={`/house/${house._id}`}>
-        <img
-          src={
-            house.imageUrls[0] ||
-            'https://53.fs1.hubspotusercontent-na1.net/hub/53/hubfs/Sales_Blog/real-estate-business-compressor.jpg?width=595&height=400&name=real-estate-business-compressor.jpg'
-          }
-          alt='listing cover'
-          className='h-[320px] sm:h-[220px] w-full object-cover hover:scale-105 transition-scale duration-300'
-        />
-        <div className='p-3 flex flex-col gap-2 w-full'>
-          <p className='truncate text-lg font-semibold text-purple-700'>
-            {house.name}
+    <>
+      {landlord && (
+        <div className='flex flex-col gap-2'>
+          <p>
+            Contact <span className='font-semibold'>{landlord.username}</span>{' '}
+            for{' '}
+            <span className='font-semibold'>{house.name.toLowerCase()}</span>
           </p>
-          <div className='flex items-center gap-1'>
-            <MdLocationOn className='h-4 w-4 text-green-700' />
-            <p className='text-sm text-gray-600 truncate w-full'>
-              {house.address}
-            </p>
-          </div>
-          <p className='text-sm text-gray-600 line-clamp-2'>
-            {house.description}
-          </p>
-          <p className='text-slate-500 mt-2 font-semibold '>
-            $
-            {house.offer
-              ? house.discountPrice.toLocaleString('en-US')
-              : house.price.toLocaleString('en-US')}
-            {house.type === 'join' && ' / month'}
-          </p>
-          <div className='text-purple-700 flex gap-4'>
-            <div className='font-bold text-xs'>
-              {house.bedrooms > 1
-                ? `${house.bedrooms} beds `
-                : `${house.bedrooms} bed `}
-            </div>
-            <div className='font-bold text-xs'>
-              {house.bathrooms > 1
-                ? `${house.bathrooms} baths `
-                : `${house.bathrooms} bath `}
-            </div>
-          </div>
-          <button
-            onClick={toggleContact}
-            className='bg-purple-700 text-white text-center p-3 uppercase rounded-lg hover:opacity-95'
+          <textarea
+            name='message'
+            id='message'
+            rows='2'
+            value={message}
+            onChange={onChange}
+            placeholder='Enter your message here...'
+            className='w-full border p-3 rounded-lg'
+          ></textarea>
+
+          <Link
+          to={`mailto:${landlord.email}?subject=Regarding ${house.name}&body=${message}`}
+          className='bg-purple-700 text-white text-center p-3 uppercase rounded-lg hover:opacity-95'
           >
-            Contact
-          </button>
-          {showContact && <Contact house={house} />}
+            Send Message          
+          </Link>
         </div>
-      </Link>
-    </div>
+      )}
+    </>
   );
 }

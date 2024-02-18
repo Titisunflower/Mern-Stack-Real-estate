@@ -64,20 +64,21 @@ export default function Home() {
           ))}
       </Swiper>
       <div className='max-w-6xl mx-auto p-3 flex flex-col gap-8 my-10 items-center'>
-      {joinHouses && joinHouses.length > 0 && (
-          <div className=''>
-            <div className='my-3'>
-              <h2 className='text-2xl font-semibold text-purple-600'>Recent places for Join</h2>
-              <Link className='text-sm text-slate-800 hover:underline' to={'/search?type=join'}>Show more places for Join</Link>
-            </div>
-            <div className='flex flex-wrap gap-4'>
-              {joinHouses.map((house) => (
-                <HouseItem house={house} key={house._id} />
-              ))}
-            </div>
-          </div>
-        )}
-      </div> 
+  {joinHouses && joinHouses.length > 0 && (
+    <div className='text-center'>
+      <div className='my-3'>
+        <h2 className='text-2xl font-semibold text-purple-600'>Recent places for Join</h2>
+        <Link className='text-sm text-slate-800 hover:underline' to={'/search?type=join'}>Show more places for Join</Link>
+      </div>
+      <div className='flex flex-wrap justify-center gap-4'>
+        {joinHouses.map((house) => (
+          <HouseItem house={house} key={house._id} />
+        ))}
+      </div>
+    </div>
+  )}
+</div>
+
       <Footer />
     </div>
   )

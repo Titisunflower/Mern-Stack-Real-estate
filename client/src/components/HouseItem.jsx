@@ -28,7 +28,7 @@ export default function HouseItem({ house }) {
             {house.description}
           </p>
           <p className='text-slate-500 mt-2 font-semibold '>
-            $
+            Rwf 
             {house.offer
               ? house.discountPrice.toLocaleString('en-US')
               : house.price.toLocaleString('en-US')}
